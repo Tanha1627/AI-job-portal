@@ -8,9 +8,9 @@ import { Bookmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 
-const Job = () => {
+const Job = ({job}) => {
   const navigate = useNavigate();
-  const jobId="hsufkksl"
+
   return (
     <div className='p-5 rounded-md shadow-xl bg-white border border-gray-200'>
       <div className='flex items-center justify-between'>
@@ -27,24 +27,25 @@ const Job = () => {
         </Button>
 
         <div>
-          <h1>Company Name</h1>
-          <p>Bangladesh</p>
+         <h1>{job?.companyName}</h1>
+          <p>{job?.location}</p>
         </div>
         <div>
-          <h2>Title</h2>
-          <p className='text-sm'>Lorem ipsum dolor sit amet consectetur adipisicing </p>
+           <h2>{job?.title}</h2>
+          <p className='text-sm'>{job?.description}</p>
         </div>
         <div className='flex items-center gap-2 mt-4'>
-      <Stack direction="row" spacing={1}>
-      <Chip label="12 Positions" color="primary" variant="outlined" />
-      <Chip label="Part Time" color="secondary" variant="outlined" />
-      <Chip label="24LPA" color="success" variant="outlined" />
-    </Stack>
+       <Stack direction="row" spacing={1} className="mt-4">
+          <Chip label={`${job?.position} Positions`} color="primary" variant="outlined" />
+          <Chip label={job?.jobType} color="secondary" variant="outlined" />
+          <Chip label={`${job?.salary}LPA`} color="success" variant="outlined" />
+        </Stack>
+
         </div>
       
 
 <Stack direction="row" spacing={2} mt={2}>
-  <Button variant="outlined" onClick={() => navigate(`/description/${jobId}`)}>
+  <Button variant="outlined" onClick={() => navigate(`/description/${job?._id}`)}>
     Details
   </Button>
 

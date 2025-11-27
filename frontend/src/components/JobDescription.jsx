@@ -1,9 +1,15 @@
 import React from 'react'
 import { Button, Chip, Stack, Typography, Box } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import useGetSingleJob from '@/hooks/useGetSingleJob';
 
 
 const JobDescription = () => {
- const isApplied=false
+  const isApplied=false
+ const params = useParams();
+ const jobId = params.id;
+
+ useGetSingleJob(jobId);
   return (
         <Box maxWidth="1200px" mx="auto" my={10}>
       <Box display="flex" justifyContent="space-between" alignItems="center">

@@ -8,6 +8,7 @@ import AppliedJobTable from './AppliedJobTable';
 import UpdateProfileDialog from './UpdateProfileDialog';
 import  { useState } from 'react';
 import { useSelector } from 'react-redux';
+import PDFViewer from "./PDFViewer.jsx"; 
 
 
 
@@ -36,6 +37,9 @@ const Profile = () => {
             <h2 className="font-medium text-xl">{user?.fullname}</h2>
             <p>{user?.profile?.bio}</p>
           </div>
+          
+          
+
 
            <Button 
           variant="outline" 
@@ -74,6 +78,7 @@ const Profile = () => {
     isResume ? <a target='blank' href={user?.profile?.resumeFileUrl}>{user?.profile?.resumeOriginalName}</a> : <span>NA</span>
   }
  </div>
+
   </div>
   </div>
       <div>

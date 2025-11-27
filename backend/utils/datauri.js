@@ -1,11 +1,14 @@
-import DataUriParser from "datauri/parser.js"
 
-import path from "path";
+
+import DataUriParser from "datauri/parser.js";
 
 const getDataUri = (file) => {
-    const parser = new DataUriParser();
-    const extName = path.extname(file.originalname).toString();
-    return parser.format(extName, file.buffer);
-}
+  const parser = new DataUriParser();
+
+  // Detect PDF correctly
+  const mimeType = file.mimetype || "application/pdf";
+
+  return parser.format(mimeType, file.buffer);
+};
 
 export default getDataUri;
