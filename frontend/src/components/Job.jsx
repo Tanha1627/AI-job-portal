@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 const Job = ({job}) => {
   const navigate = useNavigate();
 
+  
+
   return (
     <div className='p-5 rounded-md shadow-xl bg-white border border-gray-200'>
       <div className='flex items-center justify-between'>

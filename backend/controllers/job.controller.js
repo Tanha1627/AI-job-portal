@@ -100,3 +100,17 @@ export const getAdminJobs = async (req, res) => {
         console.log(error);
     }
 }
+
+
+// const keyword = req.query.keyword || "";
+// ```
+
+// **What it does:**
+// - Extracts `keyword` from URL query parameters
+// - If no keyword provided, defaults to empty string
+
+// **Example URLs:**
+// ```
+// GET /api/v1/job/get                    → keyword = ""
+// GET /api/v1/job/get?keyword=developer  → keyword = "developer"
+// GET /api/v1/job/get?keyword=react      → keyword = "react"
