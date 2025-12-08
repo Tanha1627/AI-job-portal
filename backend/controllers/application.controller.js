@@ -1,48 +1,104 @@
 import { Application } from "../models/application.model.js";
 import { Job } from "../models/job.model.js";
 
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
+
 export const applyJob = async (req, res) => {
     try {
         const userId = req.id;
         const jobId = req.params.id;
+        
+        // Extract form data from request body
+        const { fullname, email, phoneNumber, coverLetter } = req.body;
+        
         if (!jobId) {
             return res.status(400).json({
                 message: "Job id is required.",
                 success: false
-            })
-        };
-        // check if the user has already applied for the job
-        const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
+            });
+        }
 
-        if (existingApplication) {
+        // Validate required fields
+        if (!fullname || !email || !phoneNumber || !coverLetter) {
             return res.status(400).json({
-                message: "You have already applied for this jobs",
+                message: "All fields are required.",
                 success: false
             });
         }
 
-        // check if the jobs exists
+        // Check if resume file was uploaded
+        if (!req.file) {
+            return res.status(400).json({
+                message: "Resume is required.",
+                success: false
+            });
+        }
+
+        // Check if the user has already applied for the job
+        const existingApplication = await Application.findOne({ 
+            job: jobId, 
+            applicant: userId 
+        });
+
+        if (existingApplication) {
+            return res.status(400).json({
+                message: "You have already applied for this job",
+                success: false
+            });
+        }
+
+        // Check if the job exists
         const job = await Job.findById(jobId);
         if (!job) {
             return res.status(404).json({
                 message: "Job not found",
                 success: false
-            })
+            });
         }
-        // create a new application
-        const newApplication = await Application.create({
-            job:jobId,
-            applicant:userId,
+
+        // Upload resume to Cloudinary
+        const fileUri = getDataUri(req.file);
+        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+            resource_type: "auto",
+            folder: "application_resumes",
+            format: "pdf"
         });
 
+        // Create viewable URL (removes forced download)
+        const viewableUrl = cloudResponse.secure_url.replace(
+            '/upload/', 
+            '/upload/fl_attachment:false/'
+        );
+
+        // Create a new application with all fields
+        const newApplication = await Application.create({
+            job: jobId,
+            applicant: userId,
+            fullname,
+            email,
+            phoneNumber,
+            coverLetter,
+            resumeFileUrl: viewableUrl,
+            resumeOriginalName: req.file.originalname
+        });
+
+        // Add application to job's applications array
         job.applications.push(newApplication._id);
         await job.save();
+
         return res.status(201).json({
-            message:"Job applied successfully.",
-            success:true
-        })
+            message: "Job application submitted successfully.",
+            success: true,
+            application: newApplication
+        });
+
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong.",
+            success: false
+        });
     }
 };
 export const getAppliedJobs = async (req,res) => {

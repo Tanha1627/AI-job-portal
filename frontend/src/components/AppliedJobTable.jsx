@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCaption from '@mui/material/Table'; // optional, we’ll use native <caption> below
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 
 // Sample data
 const rows = [
@@ -28,9 +28,10 @@ function AppliedJobTable() {
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Job Role</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>jobrole</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Company</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+           
           </TableRow>
         </TableHead>
 
@@ -42,6 +43,7 @@ function AppliedJobTable() {
               <TableCell>{row.jobRole}</TableCell>
               <TableCell>{row.company}</TableCell>
               <TableCell>{row.status}</TableCell>
+             
             </TableRow>
           ))}
         </TableBody>

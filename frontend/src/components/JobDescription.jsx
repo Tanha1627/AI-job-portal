@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Chip, Stack, Typography, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
@@ -6,12 +6,19 @@ import { setSingleJob } from '@/redux/jobSlice';
 import { JOB_API_END_POINT } from '@/utils/constant';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import ApplicationForm from './ApplicationForm.jsx'
 
 
 const JobDescription = () => {
-  const isApplied=false
+  const [open, setOpen] = useState(false);
+  // const isApplied=false
+ 
+
    const {singleJob} = useSelector(store=>store.job);
    const{user} = useSelector(store=>store.auth);
+
+
+    const isApplied = singleJob?.applications?.some(app => app.applicant === user?._id) || false;
  const params = useParams();
  const jobId = params.id;
 
@@ -30,6 +37,11 @@ const JobDescription = () => {
         }
         fetchSingleJob();
     },[jobId,dispatch,user?._id])
+
+
+const handleApplyClick = () => {
+    setOpen(true);
+  };
   return (
         <Box maxWidth="1200px" mx="auto" my={10}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -44,8 +56,10 @@ const JobDescription = () => {
         <Button
           variant="contained"
           color="secondary"
-        //   disabled={isApplied}
-        //   onClick={isApplied ? null : applyJobHandler}
+          disabled={isApplied}
+          // onClick={handleApplyClick}
+           onClick={isApplied ? null : handleApplyClick}
+          
         >
           {isApplied ? 'Already Applied' : 'Apply Now'}
         </Button>
@@ -62,6 +76,8 @@ const JobDescription = () => {
         <Typography><strong>Total Applicants:</strong>{singleJob?.applications?.length}</Typography>
         <Typography><strong>Posted Date:</strong>{singleJob?.createdAt.split("T")[0]}</Typography>
       </Stack>
+
+       <ApplicationForm open={open} setOpen={setOpen} jobId={jobId} />
     </Box>
   )
 }

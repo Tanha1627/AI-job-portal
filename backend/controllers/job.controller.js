@@ -102,6 +102,42 @@ export const getAdminJobs = async (req, res) => {
 }
 
 
+// NEW: Get jobs by company ID (for admin)
+export const getJobsByCompany = async (req, res) => {
+    try {
+        const companyId = req.params.companyId;
+        const adminId = req.id;
+
+        const jobs = await Job.find({ 
+            company: companyId,
+            created_by: adminId 
+        })
+        .populate({
+            path: 'company',
+            select: 'name logo'
+        })
+        .populate({
+            path: 'applications',
+            populate: {
+                path: 'applicant',
+                select: 'fullname email phoneNumber profile'
+            }
+        })
+        .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            jobs,
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
+    }
+};
+
 // const keyword = req.query.keyword || "";
 // ```
 
