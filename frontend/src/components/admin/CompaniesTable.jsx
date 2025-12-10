@@ -17,11 +17,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-// const rows = [
-//   {company: 'Google', date: '2025-11-01', action: 'edit' },
-//   { company: 'Google', date: '2025-11-01', action: 'edit'},
-//   {company: 'Google', date: '2025-11-01', action: 'edit' },
-// ];
+
 
 const CompaniesTable = () => {
 
@@ -71,9 +67,12 @@ const navigate = useNavigate();
                           <Edit2 className='w-4' />
                           <span>Edit</span>
                         </div>
-                        <div className='flex items-center gap-2 cursor-pointer mt-2'>
+                        <div 
+                          className='flex items-center gap-2 cursor-pointer mt-2 hover:bg-gray-100 p-2 rounded'
+                          onClick={() => navigate(`/admin/companies/${company._id}/jobs`)}
+                        >
                           <Eye className='w-4' />
-                          <span>Applicants</span>
+                          <span>View Jobs</span>
                         </div>
                       </PopoverContent>
                     </Popover>

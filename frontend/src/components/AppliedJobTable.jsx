@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCaption from '@mui/material/Table'; // optional, we’ll use native <caption> below
-// import Paper from '@mui/material/Paper';
+ import Paper from '@mui/material/Paper';
 
 // Sample data
 const rows = [

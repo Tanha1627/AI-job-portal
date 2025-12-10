@@ -10,6 +10,10 @@ import JobDescription from "./components/JobDescription";
 import Companies from "./components/admin/Companies";
 import CompanyCreate from "./components/admin/CompanyCreate";
 import CompanySetup from "./components/admin/CompanySetup";
+import CompanyJobs from "./components/admin/CompanyJobs";
+import CreateJob from "./components/admin/CreateJob";
+import JobFormPage from "./components/admin/CreateJob";
+import ViewApplication from "./components/admin/ViewApplication";
 
 const Layout = () => {
   return (
@@ -66,10 +70,23 @@ const appRouter = createBrowserRouter([
         path:"/admin/companies/:id",
         element:<CompanySetup/>
       },
-       {
-        path:"/admin/companies/:id",
-        element:<CompanySetup/>
+      {
+        path:"/admin/companies/:id/jobs",
+        element:<CompanyJobs/>
+      },
+        {
+        path: "admin/jobs/create",
+        element: <CreateJob/>, // route for job creation
+      },
+      {
+        path:"admin/jobs/:id/edit",
+         element:<JobFormPage/>,
+      },
+      {
+        path:"/admin/jobs/:id/applications",
+        element:<ViewApplication/>
       }
+
     ],
   },
 ]);
