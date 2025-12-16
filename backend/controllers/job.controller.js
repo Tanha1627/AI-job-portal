@@ -65,7 +65,13 @@ export const getJobById = async (req, res) => {
     try {
         const jobId = req.params.id;
         const job = await Job.findById(jobId).populate({
-            path:"applications"
+            path:"applications",
+            select: "fullname email phoneNumber resumeFileUrl resumeOriginalName coverLetter status createdAt applicant",
+            populate: {
+      path: "applicant",
+      model: "User",  
+      select: "fullname email phoneNumber profile"
+    }
         });
         if (!job) {
             return res.status(404).json({

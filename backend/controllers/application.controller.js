@@ -60,16 +60,18 @@ export const applyJob = async (req, res) => {
         // Upload resume to Cloudinary
         const fileUri = getDataUri(req.file);
         const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-            resource_type: "auto",
-            folder: "application_resumes",
-            format: "pdf"
+            resource_type: "raw",
+            folder: "application_resumes"
+            // format: "pdf"
         });
 
         // Create viewable URL (removes forced download)
-        const viewableUrl = cloudResponse.secure_url.replace(
-            '/upload/', 
-            '/upload/fl_attachment:false/'
-        );
+        const viewableUrl = cloudResponse.secure_url;
+
+        // .replace(
+        //     '/upload/', 
+        //     '/upload/fl_attachment:false/'
+        // );
 
         // Create a new application with all fields
         const newApplication = await Application.create({

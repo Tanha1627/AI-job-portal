@@ -147,9 +147,10 @@ export const updateProfile = async (req, res) => {
         // cloudinary ayega idhar
         const fileUri = getDataUri(file);
        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-  resource_type: "auto",   // instead of "raw"
-  folder: "resumes",
-  format: "pdf"
+  resource_type: "raw",   // instead of "raw"
+//   folder: "resumes",
+  format: "pdf",
+  type:"upload"
 });
 
 
@@ -176,7 +177,8 @@ export const updateProfile = async (req, res) => {
       
         // resume comes later here...
         if(cloudResponse){
-              const viewableUrl = cloudResponse.secure_url.replace('/upload/', '/upload/fl_attachment:false/');
+            //   const viewableUrl = cloudResponse.secure_url.replace('/upload/', '/upload/fl_attachment:false/');
+               const viewableUrl = cloudResponse.secure_url;
         user.profile.resumeFileUrl = viewableUrl;
         user.profile.resumeOriginalName = file.originalname;
         }

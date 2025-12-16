@@ -27,12 +27,24 @@ import {
   Visibility,
   Download
 } from '@mui/icons-material';
+import { NavigateBefore, NavigateNext } from '@mui/icons-material';
+
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+// Set worker using the public folder
+if (typeof window !== 'undefined' && 'Worker' in window) {
+  pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+}
+
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from '@/utils/constant';
 
 const ViewApplication = () => {
-  const { jobId } = useParams();
+ const { id } = useParams();
+const jobId = id;
   const navigate = useNavigate();
   
   const [job, setJob] = useState(null);
@@ -41,6 +53,12 @@ const ViewApplication = () => {
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null); // Track which app is being updated
+
+
+   const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchJobAndApplications = async () => {
@@ -106,6 +124,27 @@ const ViewApplication = () => {
       default:
         return 'default';
     }
+  };
+
+
+   // PDF viewer functions
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+    setPageNumber(1);
+    // setPdfLoading(false);
+  };
+
+  const onDocumentLoadError = (error) => {
+    console.error('Error loading PDF:', error);
+    setPdfLoading(false);
+  };
+
+  const goToPrevPage = () => {
+    setPageNumber(prev => Math.max(prev - 1, 1));
+  };
+
+  const goToNextPage = () => {
+    setPageNumber(prev => Math.min(prev + 1, numPages));
   };
 
   if (loading) {
@@ -260,10 +299,10 @@ const ViewApplication = () => {
                       </IconButton>
 
                       {/* Download Resume */}
-                      {app.applicant?.profile?.resume && (
+                      {app.resumeFileUrl && (
                         <IconButton
                           size="small"
-                          onClick={() => window.open(app.applicant.profile.resume, '_blank')}
+                          onClick={() => window.open(app.resumeFileUrl, '_blank')}
                           title="Download Resume"
                         >
                           <Download fontSize="small" />
@@ -334,18 +373,112 @@ const ViewApplication = () => {
                 </Stack>
               </Box>
               <Box>
-                <Typography variant="subtitle2" color="text.secondary">Resume</Typography>
-                {selectedApplication.applicant?.profile?.resume ? (
+                <Typography variant="subtitle2" color="text.secondary">Cover Letter</Typography>
+                <Typography variant="body1" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
+                  {selectedApplication.coverLetter || 'Not provided'}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">{selectedApplication.resumeOriginalName || 'not provided'}</Typography>
+                {selectedApplication.resumeOriginalName ? (
                   <Button
                     variant="outlined"
                     startIcon={<Download />}
-                    onClick={() => window.open(selectedApplication.applicant.profile.resume, '_blank')}
+                    onClick={() => window.open(selectedApplication.resumeFileUrl, '_blank')}
                     sx={{ mt: 1 }}
                   >
                     Download Resume
+
                   </Button>
                 ) : (
                   <Typography variant="body2" color="text.secondary">No resume uploaded</Typography>
+                )}
+              </Box>
+               {/* PDF Viewer Section */}
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Resume Preview
+                </Typography>
+
+                {selectedApplication.resumeFileUrl ? (
+                  <Box
+                    sx={{
+                      border: '1px solid #ccc',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      bgcolor: '#f5f5f5'
+                    }}
+                  >
+                    {/* PDF Navigation Controls */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: 2,
+                        p: 1,
+                        bgcolor: '#fff',
+                        borderBottom: '1px solid #ccc'
+                      }}
+                    >
+                      <IconButton
+                        onClick={goToPrevPage}
+                        disabled={pageNumber <= 1}
+                        size="small"
+                      >
+                        <NavigateBefore />
+                      </IconButton>
+                      <Typography variant="body2">
+                        Page {pageNumber} of {numPages || '...'}
+                      </Typography>
+                      <IconButton
+                        onClick={goToNextPage}
+                        disabled={pageNumber >= numPages}
+                        size="small"
+                      >
+                        <NavigateNext />
+                      </IconButton>
+                    </Box>
+
+                    {/* PDF Document */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: '500px',
+                        maxHeight: '600px',
+                        overflow: 'auto',
+                        p: 2
+                      }}
+                    >
+                      {pdfLoading && <CircularProgress />}
+                      <Document
+                        file={selectedApplication.resumeFileUrl}
+                        onLoadSuccess={onDocumentLoadSuccess}
+                        onLoadError={onDocumentLoadError}
+                        loading={<CircularProgress />}
+                        error={
+                          <Typography color="error">
+                            Failed to load PDF. Please try downloading instead.
+                          </Typography>
+                        }
+                      >
+                        <Page
+                          pageNumber={pageNumber}
+                          renderTextLayer={true}
+                          renderAnnotationLayer={true}
+                          width={Math.min(window.innerWidth * 0.7, 800)}
+                        />
+                      </Document>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Paper sx={{ p: 3, textAlign: 'center', bgcolor: '#f5f5f5' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No resume uploaded
+                    </Typography>
+                  </Paper>
                 )}
               </Box>
               <Box>
@@ -386,3 +519,7 @@ const ViewApplication = () => {
 };
 
 export default ViewApplication;
+
+
+
+
