@@ -3,7 +3,9 @@ import authSlice from "./authSlice";
 import jobSlice from "./jobSlice"
 import companySlice from  "./companySlice"
 import companySlice1 from "./companyJobSlice";
-import {
+// import { authApi } from "@/features/authapi.js";
+// import {jobApi} from "@/features/jobapi.js";
+import{
     persistStore,
     persistReducer,
     FLUSH,
@@ -20,6 +22,7 @@ const persistConfig = {
     key: 'root',
     version: 1,
     storage,
+    whitelist: ["auth"],
 }
 
 
@@ -27,7 +30,9 @@ const rootReducer = combineReducers({
     auth:authSlice,
     job:jobSlice,
     company:companySlice,
-    companyJob: companySlice1
+    companyJob: companySlice1,
+    //  [authApi.reducerPath]: authApi.reducer, 
+    // [jobApi.reducerPath]: jobApi.reducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -40,7 +45,10 @@ const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }),
+        }
+        ),
 });
 
 export  default store;
+// .concat(authApi.middleware,
+//             jobApi.middleware

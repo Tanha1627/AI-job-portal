@@ -1,12 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import FilterCard from './FilterCard'
 import Job from './Job'
 import { SpaceIcon } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import useGetAllJobs from '@/hooks/useGetAllJobs.jsx';
 
 // const jobsArray = [1, 2, 3, 4, 5, 6, 7, 8];
 const Jobs = () => {
-    const {allJobs} = useSelector(store=>store.job);
+   
+ 
+
+
+    useGetAllJobs();
+
+
+ const { allJobs } = useSelector(store => store.job);
+
+
     return (
         <div>
           
@@ -39,3 +49,5 @@ const Jobs = () => {
 }
 
 export default Jobs
+
+// import { useGetAllJobsQuery } from "@/features/jobapi.js";
