@@ -1,42 +1,64 @@
+
+
 import React, { useEffect, useState } from 'react'
 import { Button, Chip, Stack, Typography, Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
-import { setSingleJob } from '@/redux/jobSlice';
+// import { setSingleJob } from '@/redux/jobSlice';
 import { JOB_API_END_POINT } from '@/utils/constant';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import ApplicationForm from './ApplicationForm.jsx'
 
-
+import { setSingleJob, clearSingleJob } from '@/redux/jobSlice';
 const JobDescription = () => {
   const [open, setOpen] = useState(false);
   // const isApplied=false
  
 
-   const {singleJob} = useSelector(store=>store.job);
    const{user} = useSelector(store=>store.auth);
 
+   const {singleJob} = useSelector(store=>store.job);
 
-    const isApplied = singleJob?.applications?.some(app => app.applicant === user?._id) || false;
+    const isApplied = singleJob?.applications?.some(app => app.applicant?._id === user?._id) || false;
  const params = useParams();
  const jobId = params.id;
 
 
  const dispatch = useDispatch();
- useEffect(()=>{
-        const fetchSingleJob = async () => {
-            try {
-                const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`,{withCredentials:true});
-                if(res.data.success){
-                    dispatch(setSingleJob(res.data.job));
-                }
-            } catch (error) {
-                console.log(error);
-            }
+
+const fetchSingleJob = async () => {
+    try {
+        const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, { withCredentials: true });
+        if(res.data.success){
+            dispatch(setSingleJob(res.data.job));
         }
-        fetchSingleJob();
-    },[jobId,dispatch,user?._id])
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+useEffect(() => {
+    fetchSingleJob();
+}, [jobId, dispatch]);
+
+//  useEffect(()=>{
+//   // dispatch(clearSingleJob());
+//         const fetchSingleJob = async () => {
+//             try {
+//                 const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`,{withCredentials:true});
+//                 if(res.data.success){
+//                     dispatch(setSingleJob(res.data.job));
+//                 }
+//             } catch (error) {
+//                 console.log(error);
+//             }
+//         }
+//         fetchSingleJob();
+//     },[jobId,dispatch,user?._id]
+  
+  
+//   )
 
 
 const handleApplyClick = () => {
@@ -77,7 +99,7 @@ const handleApplyClick = () => {
         <Typography><strong>Posted Date:</strong>{singleJob?.createdAt.split("T")[0]}</Typography>
       </Stack>
 
-       <ApplicationForm open={open} setOpen={setOpen} jobId={jobId} />
+       <ApplicationForm open={open} setOpen={setOpen} jobId={jobId}   refetchJob={fetchSingleJob}  />
     </Box>
   )
 }

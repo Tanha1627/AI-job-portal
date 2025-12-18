@@ -13,13 +13,16 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { JOB_API_END_POINT } from '@/utils/constant';
 import { toast } from 'sonner';
+import useGetCompanyById from '@/hooks/useGetCompanyById';
 
 const JobFormPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const params = useParams();
 
-  const companyId = location.state?.companyId; // for creating a new job
+  const navigate = useNavigate();
+//  useGetCompanyById(params.id);
+  
+  // const companyId = location.state?.companyId; // for creating a new job
+  const companyId = params.companyId;
   const jobId = params.id; // for editing an existing job
 
   const [formData, setFormData] = useState({
@@ -74,17 +77,20 @@ const JobFormPage = () => {
 
   const handleSubmit = async () => {
     if (!validate()) return;
-
-    try {
-
-         const payload = {
-      ...formData,
-      companyId,
-      experience: formData.experienceLevel,
+ try {
+    const body = {
+      title: formData.title,
+      description: formData.description,
+      requirements: formData.requirements, // backend will split
       salary: Number(formData.salary),
-      position: Number(formData.position)
+      position: Number(formData.position),
+      location: formData.location,
+      jobType: formData.jobType,
+      experience: formData.experienceLevel
     };
 
+
+   
 
       if (jobId) {
         // Update existing job
@@ -95,7 +101,12 @@ const JobFormPage = () => {
         }
       } else {
         // Create new job
-        const res = await axios.post(`${JOB_API_END_POINT}/post`, payload,  { withCredentials: true });
+        const res = await axios.post(
+  `${JOB_API_END_POINT}/post/${companyId}`, // URL params
+  body, // <-- this is your form data
+  { withCredentials: true } // <-- this is the axios config
+);
+
         if (res.data.success) {
           toast.success('Job created successfully');
           navigate(`/admin/companies/${companyId}/jobs`);

@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { APPLICATION_API_END_POINT } from '@/utils/constant';
 
-const ApplicationForm = ({ open, setOpen, jobId }) => {
+const ApplicationForm = ({ open, setOpen, jobId,  refetchJob }) => {
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({
         fullname: "",
@@ -95,7 +95,12 @@ const ApplicationForm = ({ open, setOpen, jobId }) => {
             
             if (res.data.success) {
                 toast.success(res.data.message);
+                
+
+//   dispatch(setSingleJob(jobRes.data.job));
+   if (refetchJob) await refetchJob();
                 setOpen(false);
+              
                 setInput({
                     fullname: "",
                     email: "",

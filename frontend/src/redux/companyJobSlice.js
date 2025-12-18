@@ -7,6 +7,7 @@ const companyJobSlice = createSlice({
     jobs: [],       // all jobs for a specific company
     loading: false,
     error: null,
+    singleJob1:null,
   },
   reducers: {
     setCompanyJobs: (state, action) => {
@@ -15,6 +16,9 @@ const companyJobSlice = createSlice({
     // clearCompanyJobs: (state) => {
     //   state.jobs = [];
     // },
+    setSingleJob:(state,action)=>{
+            state.singleJob1 = action.payload;
+        },
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -23,8 +27,14 @@ const companyJobSlice = createSlice({
     },
   },
 });
+export const {
+  setCompanyJobs,
+  clearCompanyJobs,
+  setSingleJob,
+  clearSingleJob,
+  setLoading,
+  setError,
+} = companyJobSlice.actions;
 
-export const { setCompanyJobs, setLoading, setError } = companyJobSlice.actions;
+// ✅ Export reducer
 export default companyJobSlice.reducer;
-
-// clearCompanyJobs, 

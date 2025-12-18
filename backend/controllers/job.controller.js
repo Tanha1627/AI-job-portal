@@ -1,17 +1,43 @@
 import { Job } from "../models/job.model.js";
+import { Company } from "../models/company.model.js";
 
-// admin post krega job
+
 export const postJob = async (req, res) => {
     try {
-        const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
+        // Get companyId from URL params instead of body
+      const { companyId } = req.params;
+        const { title, description, requirements, salary, location, jobType, experience, position } = req.body;
         const userId = req.id;
 
-        if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position || !companyId) {
+        // Validation
+        if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position) {
             return res.status(400).json({
-                message: "Somethin is missing.",
+                message: "Something is missing.",
                 success: false
-            })
-        };
+            });
+        }
+
+        // if (!companyId) {
+        //     return res.status(400).json({
+        //         message: "Company ID is required.",
+        //         success: false
+        //     });
+        // }
+
+        // // Verify company exists and belongs to this user
+        // const company = await Company.findOne({ _id: companyId, userId: userId });
+        // if (!company) {
+        //     return res.status(404).json({
+        //         message: "Company not found or you don't have permission.",
+        //         success: false
+        //     });
+        // }
+        const company = await Company.findOne({ _id: companyId, userId });
+if (!company) {
+  return res.status(404).json({ message: "Company not found or no permission", success: false });
+}
+
+
         const job = await Job.create({
             title,
             description,
@@ -24,15 +50,57 @@ export const postJob = async (req, res) => {
             company: companyId,
             created_by: userId
         });
+
         return res.status(201).json({
             message: "New job created successfully.",
             job,
             success: true
         });
     } catch (error) {
-        console.log(error);
+        console.log('Error in postJob:', error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false,
+            error: error.message
+        });
     }
 }
+
+
+
+// // admin post krega job
+// export const postJob = async (req, res) => {
+//     try {
+//         const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
+//         const userId = req.id;
+
+//         if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position || !companyId) {
+//             return res.status(400).json({
+//                 message: "Somethin is missing.",
+//                 success: false
+//             })
+//         };
+//         const job = await Job.create({
+//             title,
+//             description,
+//             requirements: requirements.split(","),
+//             salary: Number(salary),
+//             location,
+//             jobType,
+//             experienceLevel: experience,
+//             position,
+//             company: companyId,
+//             created_by: userId
+//         });
+//         return res.status(201).json({
+//             message: "New job created successfully.",
+//             job,
+//             success: true
+//         });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 // for student 
 export const getAllJobs = async (req, res) => {
     try {
@@ -84,6 +152,8 @@ export const getJobById = async (req, res) => {
         console.log(error);
     }
 }
+
+
 // jobs created by admin
 export const getAdminJobs = async (req, res) => {
     try {

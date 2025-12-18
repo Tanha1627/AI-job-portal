@@ -95,7 +95,8 @@ const CompanyJobs = () => {
 
   const handleCreateJob = () => {
     // Navigate to job creation page with company ID
-    navigate(`/admin/jobs/create`, { state: { companyId } });
+     navigate(`/admin/companies/${companyId}/jobs/create`);
+    // navigate(`/admin/jobs/create`, { state: { companyId } });
   };
 
   if (loading) {

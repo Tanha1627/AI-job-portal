@@ -6,7 +6,7 @@ const LatestJobs = () => {
   const { allJobs } = useSelector(store => store.job);
 
   return (
-    <section className="max-w-7xl mx-auto my-24 px-6">
+    <section className="max-w-7xl mx-auto my-90 px-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
           <span className="bg-gradient-to-r from-[#6A38C2] to-[#F83002] bg-clip-text text-transparent">
